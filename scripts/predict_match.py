@@ -85,7 +85,7 @@ def predict_match(db_path, model_path, player1_name, player2_name, surface, tour
 if __name__ == '__main__':
     # Load environment variables from a .env file in the project root
     load_dotenv()
-
+    #python predict_match.py "NovakDjokovic" "CarlosAlcaraz" --surface Clay --level M --best_of 5
     # --- Read Configuration from Environment ---
     # This makes the script portable and easy to configure.
     db_path_from_env = os.getenv('DB_PATH')
