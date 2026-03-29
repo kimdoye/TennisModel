@@ -77,20 +77,23 @@ def scrape_atp_rankings(url):
         cells = row.find_all('td')
         try:
             player_info = {
-                'name': cells[1].find('a').text,
-                'age': float(cells[2].text),
+                'name': clean_name_text(cells[1].find('a').text),
+                'age': safe_float(cells[2].text),
                 'elo': float(cells[3].text),
                 'hard_elo': float(cells[6].text),
                 'clay_elo': float(cells[8].text),
                 'grass_elo': float(cells[10].text),
-                'rank': int(cells[15].text)
+                'rank': safe_int(cells[15].text) # handle no rank 
 
             }
             player_data.append(player_info)
-        except (AttributeError, ValueError, TypeError) as e:
-            print(f"Skipping a row due to parsing error: {e}")
+        except Exception as e:
+            # Print the error, but also print the raw name cell of the CURRENT row that failed
+            failed_name = cells[1].text.strip() if len(cells) > 1 else "Unknown"
+            print(f"Skipping row due to error: {e}. Player name: {failed_name}")
+            #print(row)
             continue
-            
+                    
     return player_data
 
 
@@ -145,64 +148,25 @@ def update_players_in_db(db_path, players):
     print("Database Elo update complete.")
     print(f"Successfully updated {updated_count} existing player records.")
 
-def remove_all_whitespace_py(text):
-    """
-    A Python function that removes all types of whitespace from a string,
-    including standard spaces, non-breaking spaces, tabs, etc.
-    
-    Args:
-        text (str): The input string.
-        
-    Returns:
-        str: The string with all whitespace removed, or the original input if not a string.
-    """
+def clean_name_text(text):
     if not isinstance(text, str):
         return text
     
-    # \s is a regex pattern that matches any whitespace character.
-    # This is more robust than trying to replace each type of space individually.
-    return re.sub(r'\s+', '', text)
+    # Replaces any block of whitespace (newlines, tabs, multiple spaces) 
+    # with ONE single space, then strips the leading/trailing spaces off the ends.
+    return re.sub(r'\s+', ' ', text).strip()
 
-def clean_column_whitespace_advanced(db_path, table_name, column_name):
-    """
-    Removes ALL whitespace (including non-breaking spaces) from a column
-    by registering a custom Python function in SQLite.
+def safe_int(text):
+    cleaned_text = text.strip() # Remove invisible spaces 
+    if cleaned_text == '':    
+        return None # For now 
+    return int(cleaned_text)    # Otherwise, convert it normally
 
-    Args:
-        db_path (str): The path to the SQLite database file.
-        table_name (str): The name of the table to update.
-        column_name (str): The name of the text column to clean.
-    """
-    print(f"Connecting to {db_path} for advanced cleaning of '{column_name}'...")
-    
-    try:
-        # Connect to the database
-        conn = sqlite3.connect(db_path)
-        
-        # Register our Python function as a custom SQL function named 'REMOVE_WHITESPACE'
-        # The '1' means the function takes one argument.
-        conn.create_function("REMOVE_WHITESPACE", 1, remove_all_whitespace_py)
-        
-        cursor = conn.cursor()
-
-        # Now, use our custom function directly in the SQL command
-        sql_command = f"UPDATE {table_name} SET {column_name} = REMOVE_WHITESPACE({column_name});"
-        
-        print(f"Executing advanced cleaning command: {sql_command}")
-        cursor.execute(sql_command)
-        
-        changes = conn.total_changes
-        
-        conn.commit()
-        conn.close()
-        
-        print("\nAdvanced cleaning complete!")
-        print(f"{changes} rows were checked/updated in the '{column_name}' column.")
-
-    except Exception as e:
-        print(f"\nAn unexpected error occurred: {e}")
-
-
+def safe_float(text):
+    cleaned = text.strip()
+    if not cleaned:  # If it's an empty string
+        return None
+    return float(cleaned)
     
 if __name__ == '__main__':
 
