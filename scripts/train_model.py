@@ -3,7 +3,7 @@ import argparse
 import pandas as pd
 import numpy as np
 import joblib
-import xgboost as xgb # UPDATED: Import xgboost
+import xgboost as xgb 
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder

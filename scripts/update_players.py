@@ -209,14 +209,14 @@ if __name__ == '__main__':
     load_dotenv()
     db_path = os.getenv('DB_PATH')
 
-    clean_column_whitespace_advanced(db_path=db_path, table_name='players', column_name='name')
+    #clean_column_whitespace_advanced(db_path=db_path, table_name='players', column_name='name')
 
     # 1. Ensure the database and table exist
-    '''initialize_database(db_path=db_path)
+    #initialize_database(db_path=db_path)
     
     # 2. Scrape the latest player data from the web
     scraped_players = scrape_atp_rankings(url=ATP_RANKINGS_URL)
     
     # 3. Update the database with the scraped data
     if scraped_players:
-        update_players_in_db(db_path=db_path, players=scraped_players)'''
+        update_players_in_db(db_path=db_path, players=scraped_players)
