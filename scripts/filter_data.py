@@ -24,7 +24,7 @@ def filter_elo_data(input_path, output_path):
         'winner_age', 'loser_age', 'winner_ht', 'loser_ht', 'winner_hand', 'loser_hand',
         'winner_rank', 'loser_rank', 'winner_rank_points', 'loser_rank_points',
         'surface', 'tourney_level', 'best_of',
-        # It's important to keep the new Elo columns as well!
+        # keep the new Elo columns as well
         'winner_surface_elo', 'loser_surface_elo' 
     ]
 
