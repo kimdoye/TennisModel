@@ -25,3 +25,7 @@ Thumbs.db
 .vscode/
 
 .env
+
+# --- Gemini CLI ---
+GEMINI.md
+.gemini/
